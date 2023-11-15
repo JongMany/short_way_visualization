@@ -1,0 +1,13 @@
+.square {
+    width: 30px;
+    height: 30px;
+    border: 1px solid black;
+}
+
+.road {
+    background-color: white;
+}
+
+.wall {
+    background-color: black;
+}
