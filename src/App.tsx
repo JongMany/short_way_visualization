@@ -16,10 +16,6 @@ export interface ChildNode {
   parent: string;
 }
 
-// const initMaze = `1 1 1
-// 1 1 1
-// 1 1 1`;
-
 function App() {
   const [mazeString, setMazeString] = useState(initMaze);
   const [maze, setMaze] = useState<string[][]>([]);

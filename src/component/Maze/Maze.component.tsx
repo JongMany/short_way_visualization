@@ -9,8 +9,9 @@ type MazeProps = {
   path?: string[];
 }
 
+// maze 2차원 배열
 export default function Maze({maze, visualize, path}: MazeProps) {
-
+  console.log(maze)
   return <table className={styles.maze}>
     <tbody>
     {maze.map((m, idx) => <MazeRow key={`${idx}`} rowData={m} row={idx + 1} visualize={visualize} path={path} />)}
