@@ -69,7 +69,7 @@ export default function TreeVisualization({tree, visualize, treePath}: Props) {
   // const [treeData, setTreeData] = useState(buildTree(tree)[0]);
   const [dimensions, translate, containerRef] = useCenteredTree();
 
-  return <div id="treeWrapper" style={{width: '100vw', height: '30vh'}} ref={containerRef}>
+  return <div id="treeWrapper" style={{width: '100vw', height: '30vh', border: '1px solid black'}} ref={containerRef}>
     <Tree data={visualize ? treePath : tree}
           dimensions={dimensions}
           translate={translate}

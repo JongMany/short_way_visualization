@@ -4,15 +4,19 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {LocationProvider} from "./context/locationContext";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
 );
 root.render(
-    <LocationProvider>
-
-      <App/>
-    </LocationProvider>
+    <BrowserRouter>
+      <LocationProvider>
+        <Routes>
+          <Route path='/' element={<App/>} />
+        </Routes>
+      </LocationProvider>
+    </BrowserRouter>
 );
 
 // If you want to start measuring performance in your app, pass a function

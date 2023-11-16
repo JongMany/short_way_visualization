@@ -9,16 +9,20 @@ interface ContextData {
   queue: Queue,
   currentLocations: Location[],
   changeCurrentLocations: () => void;
+  clear: () => void;
 }
 
 export type Location = [number, number];
 
 const initValue: [number, number] = [0, 0];
-const queue = new Queue(initValue);
+const initQueue = new Queue(initValue);
 
 const LocationContext = createContext({
-  queue: queue, currentLocations: queue.getCurrentQueue(), changeCurrentLocations: (locations: Location | Location[]) => {
-  }
+  queue: initQueue,
+  currentLocations: initQueue.getCurrentQueue(),
+  changeCurrentLocations: (locations: Location | Location[]) => {
+  },
+  clear: () => {},
 });
 
 function isLocationArray(loc: Location | Location[]): loc is Location[] {
@@ -27,7 +31,8 @@ function isLocationArray(loc: Location | Location[]): loc is Location[] {
 }
 
 export const LocationProvider = ({children}: LocationProps) => {
-  const [locations, setCurrentLocations] = useState(queue.getCurrentQueue());
+  const [queue, setQueue] = useState(initQueue);
+  const [locations, setCurrentLocations] = useState(initQueue.getCurrentQueue());
 
   const changeCurrentLocations = (locations: Location | Location[]) => {
     if (isLocationArray(locations)) {
@@ -37,8 +42,13 @@ export const LocationProvider = ({children}: LocationProps) => {
     }
   }
 
+  const clear = () => {
+    setQueue(initQueue);
+    setCurrentLocations(initQueue.getCurrentQueue());
+  }
+
   return <LocationContext.Provider
-      value={{queue, currentLocations: locations, changeCurrentLocations}}>{children}</LocationContext.Provider>
+      value={{queue, currentLocations: locations, changeCurrentLocations, clear}}>{children}</LocationContext.Provider>
 }
 
 export const useLocationContext = () => {

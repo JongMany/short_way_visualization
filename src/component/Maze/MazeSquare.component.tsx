@@ -12,7 +12,7 @@ type MazeSquare = {
 export default function MazeSquare({data, row, column, visualize, path}: MazeSquare) {
   const {queue, currentLocations} = useLocationContext();
 
-  console.log(visualize, path);
+  // console.log(visualize, path);
   return <td
       className={`${styles.square} ${data !== '0' ? styles.road : styles.wall}`}>
     {!visualize && isInSquare(currentLocations, row, column) && '⭐️'}
@@ -30,6 +30,6 @@ function isInSquare(locations: [number, number][], row: number, column: number) 
 }
 
 function isPath(path: string[], row: number, column: number) {
-  console.log(path)
+  // console.log(path)
   return path.includes(`${column} ${row}`);
 }

@@ -3,6 +3,7 @@ import './App.css';
 import Maze from "./component/Maze/Maze.component";
 import {LocationProvider, useLocationContext, Location} from "./context/locationContext";
 import TreeVisualization, {addAttributes, buildTree, findPath} from "./component/Tree/Tree.component";
+import {useNavigate} from "react-router-dom";
 
 const initMaze = `1 1 0 0 1 0 0 0 0 1
 0 1 1 1 1 1 0 1 1 0
@@ -23,7 +24,7 @@ function App() {
   const [mazeString, setMazeString] = useState(initMaze);
   const [maze, setMaze] = useState<string[][]>([]);
   // const queue = new Queue([0, 0]);
-  const {queue, changeCurrentLocations} = useLocationContext();
+  const {queue, changeCurrentLocations, clear} = useLocationContext();
   const [refresh, setRefresh] = useState(false);
   const [locs, setLocs] = useState<[number, number][]>([]);
   const [finish, setFinish] = useState(false);
@@ -33,6 +34,7 @@ function App() {
   const [treeData, setTreeData] = useState(buildTree(tree)[0]);
   const [treePath, setTreePath] = useState<any[]>([]);
   const [visualize, setVisualize] = useState(false);
+  // 경로를 찾기 위함
   const [path, setPath] = useState<string[]>([]);
 
   // textArea의 값을 기반으로 미로를 만들기위한 버튼 클릭 핸들러
@@ -49,6 +51,10 @@ function App() {
       result.push(rowData);
     }
     setMaze(result);
+  }
+
+  const refreshPage = () => {
+    window.location.reload();
   }
 
   // textarea에 값을 입력받는 핸들러 - 1은 길, 0은 벽
@@ -96,15 +102,18 @@ function App() {
     changeCurrentLocations(currentQueue);
   }
 
+  console.log(treePath)
   return (
       <div className="App">
         <textarea id="maze" rows={20} cols={30} value={mazeString} onChange={changeHandler}/>
         <button onClick={clickHandler}>Build a Maze</button>
+        <button onClick={refreshPage}>새로고침</button>
         <div>
           <Maze maze={maze} visualize={visualize} path={path}/>
           <button onClick={nextClickHandler}>Go 1 step</button>
         </div>
         <TreeVisualization tree={buildTree(tree)[0]} visualize={visualize} treePath={treePath}/>
+        <p>{visualize && `경로는 총 ${path?.length} step을 거쳐야 합니다.`}</p>
       </div>
   );
 }
