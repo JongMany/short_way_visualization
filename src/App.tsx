@@ -1,9 +1,12 @@
-import React, {ChangeEvent, useEffect, useMemo, useState} from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import './App.css';
-import Maze from "./component/Maze/Maze.component";
-import {LocationProvider, useLocationContext, Location} from "./context/locationContext";
-import TreeVisualization, {addAttributes, buildTree, findPath} from "./component/Tree/Tree.component";
-import {useNavigate} from "react-router-dom";
+import Maze from './component/Maze/Maze.component';
+import { useLocationContext, Location } from './context/locationContext';
+import TreeVisualization, {
+  addAttributes,
+  buildTree,
+  findPath,
+} from './component/Tree/Tree.component';
 
 const initMaze = `1 1 0 0 1 0 0 0 0 1
 0 1 1 1 1 1 0 1 1 0
@@ -20,14 +23,9 @@ function App() {
   const [mazeString, setMazeString] = useState(initMaze);
   const [maze, setMaze] = useState<string[][]>([]);
   // const queue = new Queue([0, 0]);
-  const {queue, changeCurrentLocations, clear} = useLocationContext();
-  const [refresh, setRefresh] = useState(false);
-  const [locs, setLocs] = useState<[number, number][]>([]);
+  const { queue, changeCurrentLocations } = useLocationContext();
   const [finish, setFinish] = useState(false);
-  const [tree, setTree] = useState<ChildNode[]>([
-    {name: '1 1', parent: ''},
-  ]);
-  const [treeData, setTreeData] = useState(buildTree(tree)[0]);
+  const [tree, setTree] = useState<ChildNode[]>([{ name: '1 1', parent: '' }]);
   const [treePath, setTreePath] = useState<any[]>([]);
   const [visualize, setVisualize] = useState(false);
   // 경로를 찾기 위함
@@ -47,16 +45,16 @@ function App() {
       result.push(rowData);
     }
     setMaze(result);
-  }
+  };
 
   const refreshPage = () => {
     window.location.reload();
-  }
+  };
 
   // textarea에 값을 입력받는 핸들러 - 1은 길, 0은 벽
   const changeHandler = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setMazeString(e.target.value);
-  }
+  };
 
   // 다음 큐를 구하기
   const nextClickHandler = () => {
@@ -65,8 +63,8 @@ function App() {
     if (finish) {
       // 경로 시각화
       const treeData = buildTree(tree);
-      const path = findPath(treeData, `${maze[0].length} ${maze.length}`)
-      const treePath = addAttributes(treeData, path, {isPath: true})[0];
+      const path = findPath(treeData, `${maze[0].length} ${maze.length}`);
+      const treePath = addAttributes(treeData, path, { isPath: true })[0];
       setTreePath(treePath);
       setPath(path);
       setVisualize(true);
@@ -77,40 +75,63 @@ function App() {
     const goalState = checkGoalIn(prevList, maze);
     if (goalState.isGoalIn) {
       queue.push(goalState.loc);
-      const {loc, prevLoc} = goalState;
-      setTree(prev => ([...prev, {parent: `${prevLoc[1] + 1} ${prevLoc[0] + 1}`, name: `${loc[1] + 1} ${loc[0] + 1}`}]))
+      const { loc, prevLoc } = goalState;
+      setTree((prev) => [
+        ...prev,
+        {
+          parent: `${prevLoc[1] + 1} ${prevLoc[0] + 1}`,
+          name: `${loc[1] + 1} ${loc[0] + 1}`,
+        },
+      ]);
       setFinish(true);
     } else {
-      for (const loc of prevList) { // 부모
+      for (const loc of prevList) {
+        // 부모
         const row = loc[0];
         const column = loc[1];
         const nextSearchList = getList(maze, row, column);
-        for (const pos of nextSearchList) { // 자식
-          !queue.isVisited(pos) && setTree(prev => ([...prev, {
-            name: `${pos[1] + 1} ${pos[0] + 1}`,
-            parent: `${column + 1} ${row + 1}`
-          }]))
+        for (const pos of nextSearchList) {
+          // 자식 (방문하지 않은 경우, 경로에 추가)
+          !queue.isVisited(pos) &&
+            setTree((prev) => [
+              ...prev,
+              {
+                name: `${pos[1] + 1} ${pos[0] + 1}`,
+                parent: `${column + 1} ${row + 1}`,
+              },
+            ]);
           queue.push([pos[0], pos[1]]);
         }
       }
     }
     const currentQueue = queue.getCurrentQueue();
     changeCurrentLocations(currentQueue);
-  }
+  };
 
-  console.log(treePath)
+  console.log(treePath);
   return (
-      <div className="App">
-        <textarea id="maze" rows={20} cols={30} value={mazeString} onChange={changeHandler}/>
-        <button onClick={clickHandler}>Build a Maze</button>
-        <button onClick={refreshPage}>새로고침</button>
-        <div>
-          <Maze maze={maze} visualize={visualize} path={path}/>
-          <button onClick={nextClickHandler}>Go 1 step</button>
-        </div>
-        <TreeVisualization tree={buildTree(tree)[0]} visualize={visualize} treePath={treePath}/>
-        <p>{visualize && `경로는 총 ${path?.length} step을 거쳐야 합니다.`}</p>
+    <div className='App'>
+      <textarea
+        id='maze'
+        rows={20}
+        cols={30}
+        value={mazeString}
+        onChange={changeHandler}
+      />
+      <button onClick={clickHandler}>Build a Maze</button>
+      <button onClick={refreshPage}>새로고침</button>
+      <div>
+        <Maze maze={maze} visualize={visualize} path={path} />
+        <button onClick={nextClickHandler}>Go 1 step</button>
       </div>
+      <p>경로는 Zoom할 수 있습니다.(한 번 실행하시고 재시작하려면 새로고침 버튼을 클릭해주세요)</p>
+      <TreeVisualization
+        tree={buildTree(tree)[0]}
+        visualize={visualize}
+        treePath={treePath}
+      />
+      <p>{visualize && `경로는 총 ${path?.length} step을 거쳐야 합니다.`}</p>
+    </div>
   );
 }
 
@@ -151,7 +172,9 @@ function getList(maze: string[][], row: number, column: number) {
   return result;
 }
 
-type GoalInState = { isGoalIn: true, loc: Location, prevLoc: Location } | { isGoalIn: false }
+type GoalInState =
+  | { isGoalIn: true; loc: Location; prevLoc: Location }
+  | { isGoalIn: false };
 
 function checkGoalIn(searchList: Location[], maze: string[][]): GoalInState {
   const rowNum = maze.length - 1;
@@ -175,7 +198,7 @@ function checkGoalIn(searchList: Location[], maze: string[][]): GoalInState {
 
   return {
     isGoalIn: false,
-  }
+  };
 }
 
 export default App;

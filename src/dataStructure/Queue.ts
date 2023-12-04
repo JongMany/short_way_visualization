@@ -1,4 +1,5 @@
 type Location = [number, number];
+// 경로 저장 및 계산용 자료구조
 export class Queue {
   private isIn: Set<Location> = new Set(); // 이미 갔던 루트
   private queue: Location[];  // 새로 들어온 큐
